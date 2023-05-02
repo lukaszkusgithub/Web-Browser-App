@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Web_browser</string>
+    <string name="enter_url_hint">stackoveflow.com</string>
+    <string name="tabs">1</string>
+    <string name="refresh_button">Refresh Button</string>
+    <string name="go_button">Go Button</string>
+    <string name="settings_button">Settings Button</string>
 </resources>
