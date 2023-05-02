@@ -1,0 +1,16 @@
+<resources >
+    <!-- Base application theme. -->
+    <style name="Theme.Web_browser" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/blue_night_darker</item>
+        <item name="colorPrimaryVariant">@color/blue_night_dark</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/blue_night_dark</item>
+        <item name="colorSecondaryVariant">@color/blue_night_light</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">#80000000</item>
+        <!-- Customize your theme here. -->
+    </style>
+</resources>
