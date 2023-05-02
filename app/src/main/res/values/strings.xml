@@ -5,4 +5,9 @@
     <string name="refresh_button">Refresh Button</string>
     <string name="go_button">Go Button</string>
     <string name="settings_button">Settings Button</string>
+
+    <!--    home fragment -->
+    <string name="search_hint">stackoveflow.com</string>
+
+
 </resources>

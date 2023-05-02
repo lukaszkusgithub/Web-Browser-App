@@ -8,17 +8,20 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+
+    <color name="gray">#ff777777</color>
+
     <!--    my colors light -->
-    <color name="teal_dark">#FF79aa9b</color>
-    <color name="teal_light_dark">#FF38a496</color>
-    <color name="green_light_dark">#FF91c582</color>
-    <color name="green_dark">#FF2bcf66</color>
+    <color name="primary_dark">#ff212529</color>
+    <color name="primary_light">#ff343a40</color>
+    <color name="accent_light">#ffe9ecef</color>
+    <color name="accent_dark">#fff8f9fa</color>
 
     <!--    my colors night -->
-    <color name="blue_night_darker">#FF00002a</color>
-    <color name="blue_night_dark">#FF1a0f7e</color>
-    <color name="blue_night">#FF180e76</color>
-    <color name="blue_night_light">#FF0ab4de</color>
+    <color name="primary_dark_night">#ff212529</color>
+    <color name="primary_light_night">#ff343a40</color>
+    <color name="accent_light_night">#FF180e76</color>
+    <color name="accent_dark_night">#FF0ab4de</color>
 
 
 </resources>
