@@ -9,8 +9,10 @@ import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.CookieManager
 import android.webkit.URLUtil
 import android.webkit.WebChromeClient
+import android.webkit.WebStorage
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
@@ -99,6 +101,9 @@ class BrowseFragment(private var query: String) : Fragment() {
                     binding.webView.visibility = View.GONE
                     binding.customView.visibility = View.VISIBLE
                     binding.customView.addView(view)
+
+                    // Transitions the root view of the MainActivity to its end position.
+                    mainActivityRef.binding.root.transitionToEnd()
                 }
 
                 // Show the WebView and hide the custom view
@@ -136,6 +141,35 @@ class BrowseFragment(private var query: String) : Fragment() {
                 else -> loadUrl("https://www.google.com/search?q=$query")
             }
 
+            // Set an OnTouchListener on the WebView element
+            binding.webView.setOnTouchListener { _, motionEvent ->
+                // Pass the touch event to the parent view using onTouchEvent()
+                mainActivityRef.binding.root.onTouchEvent(motionEvent)
+                // Indicate that the touch event has been handled and no further
+                // processing is required
+                return@setOnTouchListener false
+            }
+
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.webView.apply {
+            // clear search matches
+            clearMatches()
+            // clear web history
+            clearHistory()
+            // clear form data
+            clearFormData()
+            // clear SSL preferences
+            clearSslPreferences()
+            // clear cache (including disk cache)
+            clearCache(true)
+            // remove all cookies
+            CookieManager.getInstance().removeAllCookies(null)
+            // delete all web storage
+            WebStorage.getInstance().deleteAllData()
         }
     }
 }
