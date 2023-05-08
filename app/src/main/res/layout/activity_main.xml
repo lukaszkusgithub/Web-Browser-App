@@ -55,18 +55,17 @@
                 app:tint="@color/white" />
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/topSearchBar"
+                android:id="@+id/bottomSearchBar"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/search_text"
                 android:hint="@string/enter_url_hint"
-                tools:hint="@string/enter_url_hint"
                 android:paddingHorizontal="15dp"
                 android:singleLine="true"
-                android:textColorHint="@color/gray"
                 android:textColor="@color/black"
-                />
+                android:textColorHint="@color/gray"
+                tools:hint="@string/enter_url_hint" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tabsBtn"
@@ -90,7 +89,7 @@
                 tools:ignore="RedundantDescriptionCheck" />
 
             <ImageButton
-                android:id="@+id/goBtn"
+                android:id="@+id/goButton"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground"
@@ -100,9 +99,6 @@
                 tools:ignore="RedundantDescriptionCheck" />
 
         </LinearLayout>
-
-
-
 
     </LinearLayout>
 
@@ -119,8 +115,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0"
-        app:tint="@color/white"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlayExtended"
+        app:tint="@color/white"
         tools:ignore="RedundantDescriptionCheck" />
 
 
