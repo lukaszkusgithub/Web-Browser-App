@@ -1,6 +1,7 @@
 package com.example.web_browser
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -73,8 +74,45 @@ class BrowseFragment(private var query: String) : Fragment() {
                     mainActivityRef.binding.bottomSearchBar.text = SpannableStringBuilder(url)
 
                 }
+
+                // Show progress bar when page starts loading
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    super.onPageStarted(view, url, favicon)
+                    mainActivityRef.binding.progressBar.progress = 0
+                    mainActivityRef.binding.progressBar.visibility = View.VISIBLE
+                }
+
+                // Hide progress bar when page finished loading
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    mainActivityRef.binding.progressBar.visibility = View.GONE
+                }
             }
-            webChromeClient = WebChromeClient()
+
+            // Enable Video play Full screen
+            webChromeClient = object : WebChromeClient() {
+                // Hide the WebView and show the custom view
+                // Add the custom view to the layout
+                override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
+                    super.onShowCustomView(view, callback)
+                    binding.webView.visibility = View.GONE
+                    binding.customView.visibility = View.VISIBLE
+                    binding.customView.addView(view)
+                }
+
+                // Show the WebView and hide the custom view
+                override fun onHideCustomView() {
+                    super.onHideCustomView()
+                    binding.webView.visibility = View.VISIBLE
+                    binding.customView.visibility = View.GONE
+                }
+
+                // Update the progress bar in the MainActivity
+                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                    super.onProgressChanged(view, newProgress)
+                    mainActivityRef.binding.progressBar.progress = newProgress
+                }
+            }
 
             // Load the appropriate URL based on the value of the query variable
             when {

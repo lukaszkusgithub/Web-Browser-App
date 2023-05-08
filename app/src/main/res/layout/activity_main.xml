@@ -76,7 +76,8 @@
                 android:gravity="center"
                 android:text="@string/tabs"
                 android:textColor="@color/white"
-                tools:ignore="RedundantDescriptionCheck" />
+                tools:ignore="RedundantDescriptionCheck"
+                android:singleLine="true"/>
 
             <ImageButton
                 android:id="@+id/refreshBtn"
