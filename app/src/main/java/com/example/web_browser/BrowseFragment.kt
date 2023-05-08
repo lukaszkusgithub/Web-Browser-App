@@ -87,6 +87,7 @@ class BrowseFragment(private var query: String) : Fragment() {
                     super.onPageFinished(view, url)
                     mainActivityRef.binding.progressBar.visibility = View.GONE
                 }
+
             }
 
             // Enable Video play Full screen
@@ -111,6 +112,16 @@ class BrowseFragment(private var query: String) : Fragment() {
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
                     super.onProgressChanged(view, newProgress)
                     mainActivityRef.binding.progressBar.progress = newProgress
+                }
+
+                // Show web icon in bottom search bar
+                override fun onReceivedIcon(view: WebView?, icon: Bitmap?) {
+                    super.onReceivedIcon(view, icon)
+                    try {
+                        mainActivityRef.binding.webIcon.setImageBitmap(icon)
+                    } catch (e: Exception) {
+
+                    }
                 }
             }
 

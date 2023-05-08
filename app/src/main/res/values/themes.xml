@@ -14,7 +14,5 @@
         <!-- Customize your theme here. -->
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:textColorHint">@color/gray</item>
-        <item name="android:tint">@color/black</item>
-
     </style>
 </resources>

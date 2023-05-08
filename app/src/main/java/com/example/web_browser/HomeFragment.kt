@@ -38,6 +38,9 @@ class HomeFragment : Fragment() {
         mainActivityRef.binding.bottomSearchBar.setText("")
         binding.searchViewHome.setQuery("", false)
 
+        // Set web icon to search icon
+        mainActivityRef.binding.webIcon.setImageResource(R.drawable.ic_search_white)
+
         // Set a listener for searchViewHome and check for internet connection,
         // change the tab based on the result
         binding.searchViewHome.setOnQueryTextListener(object :
