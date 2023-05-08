@@ -80,8 +80,14 @@ class BrowseFragment(private var query: String) : Fragment() {
                 // Show progress bar when page starts loading
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     super.onPageStarted(view, url, favicon)
+                    // Set progress bar to 0 and make it visible
                     mainActivityRef.binding.progressBar.progress = 0
                     mainActivityRef.binding.progressBar.visibility = View.VISIBLE
+                    // Check if the URL contains "you" (ignoring case) and transition to
+                    // the end of the layout if true
+                    if (url!!.contains("you", false)) {
+                        mainActivityRef.binding.root.transitionToEnd()
+                    }
                 }
 
                 // Hide progress bar when page finished loading

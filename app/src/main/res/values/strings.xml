@@ -9,5 +9,13 @@
     <!--    home fragment -->
     <string name="search_hint">stackoveflow.com</string>
 
+    <!--    tools -->
+    <string name="back_button">Back button</string>
+    <string name="forward_button_text">Forward button</string>
+    <string name="desktop_button_text">Desktop button</string>
+    <string name="bookmark_button_text">Bookmark button</string>
+    <string name="save_button_text">Save button</string>
+    <string name="fullscrenn_button_text">Fullscreen button</string>
+
 
 </resources>
