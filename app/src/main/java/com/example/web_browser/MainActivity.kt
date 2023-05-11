@@ -1,24 +1,27 @@
 package com.example.web_browser
 
+import OnDayNightStateChanged
+import android.R.attr
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.ColorDrawable
+import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.os.Build.VERSION_CODES.S
 import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintJob
 import android.print.PrintManager
-import android.provider.Browser
 import android.view.Gravity
-import android.view.Window
+import android.view.View
 import android.view.WindowManager
 import android.webkit.WebView
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -27,7 +30,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.example.web_browser.MainActivity.Companion.tabsList
 import com.example.web_browser.databinding.ActivityMainBinding
 import com.example.web_browser.databinding.MoreToolsBinding
 import com.google.android.material.button.MaterialButton
@@ -36,8 +38,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import java.net.URL
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
+
 
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     // Declaration of the tabsBtn variable as an object of the MaterialTextView class
     companion object {
         var tabsList: ArrayList<Fragment> = ArrayList()
-        private var isFullscreen: Boolean = true
+        private var isFullscreen: Boolean = false
         var isDesktopSite: Boolean = false
 
         //        var bookmarkList: ArrayList<Bookmark> = ArrayList()
@@ -90,7 +92,29 @@ class MainActivity : AppCompatActivity() {
 
         initializeView()
 
-        changeFullscreen(enable = true)
+        changeFullscreen(enable = false)
+
+        // NIGHT & LIGHT mode
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    }
+
+    // NIGHT & LIGHT mode when changing UI config
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            recreate()
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            recreate()
+        }
+        supportFragmentManager.fragments.forEach {
+            if(it is OnDayNightStateChanged){
+                it.onDayNightApplied()
+            }
+        }
     }
 
 
@@ -234,7 +258,7 @@ class MainActivity : AppCompatActivity() {
                     it.setTextColor(
                         ContextCompat.getColor(
                             this,
-                            R.color.white
+                            com.google.android.material.R.color.design_default_color_on_secondary
                         )
                     )
                     false
@@ -270,7 +294,9 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }
+
     }
+
 
     // Print Page as PDF
     private fun saveWebAsPDF(web: WebView) {

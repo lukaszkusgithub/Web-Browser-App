@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Web Browser</string>
+    <string name="enter_url_hint">stackoveflow.com</string>
+    <string name="tabs">1</string>
+    <string name="refresh_button">Odśwież</string>
+    <string name="go_button">Przejdź dalej</string>
+    <string name="settings_button">Ustawienia</string>
+
+    <!--    home fragment -->
+    <string name="search_hint">stackoveflow.com</string>
+
+    <!--    tools -->
+    <string name="back_button">Cofnij</string>
+    <string name="forward_button_text">Przejdz do przody</string>
+    <string name="desktop_button_text">Widok desktop</string>
+    <string name="bookmark_button_text">Zakładki</string>
+    <string name="save_button_text">Zapisz strone</string>
+    <string name="fullscrenn_button_text">Pełny ekran</string>
+
+
+</resources>

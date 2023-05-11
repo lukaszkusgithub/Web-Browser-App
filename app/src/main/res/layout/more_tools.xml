@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/primary_light"
+    android:background="?attr/colorPrimary"
     android:orientation="vertical">
 
     <LinearLayout
@@ -19,9 +20,10 @@
             android:background="?attr/selectableItemBackground"
             android:text="@string/back_button"
             android:textAllCaps="false"
-            android:textColor="@color/white"
             app:icon="@drawable/ic_arrow_back"
-            app:iconGravity="top" />
+            app:iconGravity="top"
+            android:textColor="?attr/colorOnSecondary"
+            app:iconTint="?attr/colorOnSecondary"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/forwardButton"
@@ -31,9 +33,10 @@
             android:background="?attr/selectableItemBackground"
             android:text="@string/forward_button_text"
             android:textAllCaps="false"
-            android:textColor="@color/white"
             app:icon="@drawable/ic_arrow_forward"
-            app:iconGravity="top" />
+            app:iconGravity="top"
+            android:textColor="?attr/colorOnSecondary"
+            app:iconTint="?attr/colorOnSecondary"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
@@ -43,9 +46,10 @@
             android:background="?attr/selectableItemBackground"
             android:text="@string/save_button_text"
             android:textAllCaps="false"
-            android:textColor="@color/white"
             app:icon="@drawable/ic_save"
-            app:iconGravity="top" />
+            app:iconGravity="top"
+            android:textColor="?attr/colorOnSecondary"
+            app:iconTint="?attr/colorOnSecondary"/>
 
 
     </LinearLayout>
@@ -63,9 +67,9 @@
             android:background="?attr/selectableItemBackground"
             android:text="@string/bookmark_button_text"
             android:textAllCaps="false"
-            android:textColor="@color/white"
             app:icon="@drawable/ic_bookmark"
-
+            app:iconTint="?attr/colorOnSecondary"
+            android:textColor="?attr/colorOnSecondary"
             app:iconGravity="top" />
 
         <com.google.android.material.button.MaterialButton
@@ -76,8 +80,9 @@
             android:background="?attr/selectableItemBackground"
             android:text="@string/desktop_button_text"
             android:textAllCaps="false"
-            android:textColor="@color/white"
             app:icon="@drawable/ic_desktop"
+            app:iconTint="?attr/colorOnSecondary"
+            android:textColor="?attr/colorOnSecondary"
             app:iconGravity="top" />
 
         <com.google.android.material.button.MaterialButton
@@ -88,8 +93,9 @@
             android:background="?attr/selectableItemBackground"
             android:text="@string/fullscrenn_button_text"
             android:textAllCaps="false"
-            android:textColor="@color/white"
             app:icon="@drawable/ic_fullscreen"
+            android:textColor="?attr/colorOnSecondary"
+            app:iconTint="?attr/colorOnSecondary"
             app:iconGravity="top" />
 
 

@@ -12,16 +12,19 @@
     <color name="gray">#ff777777</color>
 
     <!--    my colors light -->
-    <color name="primary_dark">#ff212529</color>
-    <color name="primary_light">#ff343a40</color>
-    <color name="accent_light">#ffe9ecef</color>
-    <color name="accent_dark">#fff8f9fa</color>
+    <color name="primary_dark">#ffF4F4F2</color>
+    <color name="primary_light">#ffE8E8E8</color>
+    <color name="accent_light">#ffBBBFCA</color>
+    <color name="accent_dark">#ff495464</color>
+    <color name="text_color">#ff212529</color>
 
     <!--    my colors night -->
     <color name="primary_dark_night">#ff212529</color>
     <color name="primary_light_night">#ff343a40</color>
     <color name="accent_light_night">#FF180e76</color>
     <color name="accent_dark_night">#FF0ab4de</color>
+    <color name="text_color_night">#ffF4F4F2</color>
+
 
 
 </resources>

@@ -1,5 +1,6 @@
 package com.example.web_browser
 
+import OnDayNightStateChanged
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -15,11 +16,12 @@ import android.webkit.WebChromeClient
 import android.webkit.WebStorage
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.example.web_browser.databinding.FragmentBrowseBinding
 
 
-class BrowseFragment(private var query: String) : Fragment() {
+class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateChanged {
     // Declare a late-initialized binding variable of type FragmentBrowseBinding
     lateinit var binding: FragmentBrowseBinding
 
@@ -177,5 +179,10 @@ class BrowseFragment(private var query: String) : Fragment() {
             // delete all web storage
             WebStorage.getInstance().deleteAllData()
         }
+    }
+
+    // NIGHT & LIGHT mode when changing UI config
+    override fun onDayNightApplied() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
 }

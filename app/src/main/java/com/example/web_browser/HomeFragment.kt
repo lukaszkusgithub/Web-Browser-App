@@ -1,5 +1,6 @@
 package com.example.web_browser
 
+import OnDayNightStateChanged
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.SpannableStringBuilder
@@ -7,12 +8,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import com.example.web_browser.MainActivity.Companion.tabsList
 import com.example.web_browser.databinding.FragmentHomeBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.NonDisposableHandle.parent
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), OnDayNightStateChanged {
     // Declaration of the binding variable as a late-initialized property
     private lateinit var binding: FragmentHomeBinding
 
@@ -39,7 +43,7 @@ class HomeFragment : Fragment() {
         binding.searchViewHome.setQuery("", false)
 
         // Set web icon to search icon
-        mainActivityRef.binding.webIcon.setImageResource(R.drawable.ic_search_white)
+        mainActivityRef.binding.webIcon.setImageResource(R.drawable.ic_search)
 
         // Set a listener for searchViewHome and check for internet connection,
         // change the tab based on the result
@@ -67,6 +71,11 @@ class HomeFragment : Fragment() {
             else
                 Snackbar.make(binding.root, "Check your connection", 3000).show()
         }
+    }
+
+    // NIGHT & LIGHT mode when changing UI config
+    override fun onDayNightApplied() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
 
 
