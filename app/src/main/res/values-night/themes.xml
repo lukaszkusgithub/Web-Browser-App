@@ -9,7 +9,7 @@
         <item name="colorPrimaryVariant">@color/primary_light_night</item>
         <item name="colorOnPrimary">@color/primary_dark_night</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/white</item>
+        <item name="colorSecondary">@color/primary_light</item>
         <item name="colorSecondaryVariant">@color/accent_dark_night</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->

@@ -25,6 +25,32 @@
     <color name="accent_dark_night">#FF0ab4de</color>
     <color name="text_color_night">#ffF4F4F2</color>
 
+    <!--    Array colors-->
+    <!--    my colors night -->
+    <color name="blue">#FF180e76</color>
+    <color name="teal">#FF018786</color>
+    <color name="teal_2">#FF03DAC5</color>
+    <color name="pink">#FFBB86FC</color>
+    <color name="violet">#FF6200EE</color>
+    <color name="blue_2">#FF3700B3</color>
+    <color name="blue_3">#FF3700FF</color>
+    <color name="pink_2">#FFF22FFF</color>
+    <color name="red">#FFFF0000</color>
+    <color name="red_2">#FFFF3700</color>
+
+
+    <integer-array name="ColorArray">
+        <item>@color/blue</item>
+        <item>@color/blue_2</item>
+        <item>@color/blue_3</item>
+        <item>@color/pink</item>
+        <item>@color/pink_2</item>
+        <item>@color/red</item>
+        <item>@color/red_2</item>
+        <item>@color/violet</item>
+        <item>@color/teal</item>
+        <item>@color/teal_2</item>
+    </integer-array>
 
 
 </resources>

@@ -1,20 +1,21 @@
-package com.example.web_browser
+package com.example.web_browser.fragment
 
-import OnDayNightStateChanged
-import android.annotation.SuppressLint
+import android.content.Intent
+import com.example.web_browser.`interface`.OnDayNightStateChanged
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
-import com.example.web_browser.MainActivity.Companion.tabsList
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.web_browser.model.Bookmark
+import com.example.web_browser.adapter.BookmarkAdapter
+import com.example.web_browser.activity.MainActivity
+import com.example.web_browser.R
+import com.example.web_browser.activity.BookmarkActivity
 import com.example.web_browser.databinding.FragmentHomeBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.NonDisposableHandle.parent
 
 class HomeFragment : Fragment(), OnDayNightStateChanged {
     // Declaration of the binding variable as a late-initialized property
@@ -71,6 +72,26 @@ class HomeFragment : Fragment(), OnDayNightStateChanged {
             else
                 Snackbar.make(binding.root, "Check your connection", 3000).show()
         }
+
+
+        // Set the RecyclerView to have a fixed size, improving performance
+        binding.recyclerView.setHasFixedSize(true)
+        // Set the item view cache size to 5, improving performance by caching more items in memory
+        binding.recyclerView.setItemViewCacheSize(5)
+        // Set the layout manager to a GridLayoutManager with 5 columns
+        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 5)
+        // Set the adapter of the RecyclerView to a new instance of the BookmarkAdapter, passing in the context
+        binding.recyclerView.adapter = BookmarkAdapter(requireContext())
+
+        // Hide show all bookmarks Button if size of bookmarks < 1
+        if (MainActivity.bookmarkList.size < 1) {
+            binding.viewAllBookmarksButton.visibility = View.GONE
+        }
+
+        binding.viewAllBookmarksButton.setOnClickListener {
+            startActivity(Intent(requireContext(), BookmarkActivity::class.java))
+        }
+
     }
 
     // NIGHT & LIGHT mode when changing UI config

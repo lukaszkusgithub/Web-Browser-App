@@ -1,11 +1,9 @@
-package com.example.web_browser
+package com.example.web_browser.fragment
 
-import OnDayNightStateChanged
+import com.example.web_browser.`interface`.OnDayNightStateChanged
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
@@ -18,12 +16,16 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import com.example.web_browser.activity.MainActivity
+import com.example.web_browser.R
 import com.example.web_browser.databinding.FragmentBrowseBinding
+import java.io.ByteArrayOutputStream
 
 
 class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateChanged {
     // Declare a late-initialized binding variable of type FragmentBrowseBinding
     lateinit var binding: FragmentBrowseBinding
+    var web_favicon: Bitmap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,6 +70,17 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
             settings.builtInZoomControls = true
             settings.displayZoomControls = false
             webViewClient = object : WebViewClient() {
+                override fun onLoadResource(view: WebView?, url: String?) {
+                    super.onLoadResource(view, url)
+                    if (MainActivity.isDesktopSite) {
+                        evaluateJavascript(
+                            "document.querySelector('meta[name=\"viewport\"]').setAttribute('content'," +
+                                    " 'width=1024px, initial-scale=' + (document.documentElement.clientWidth / 1024));",
+                            null
+                        )
+                    }
+                }
+
                 // Override the doUpdateVisitedHistory method to update the text in bottomSearchBar
                 override fun doUpdateVisitedHistory(
                     view: WebView?,
@@ -96,6 +109,7 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
                     mainActivityRef.binding.progressBar.visibility = View.GONE
+                    binding.webView.zoomOut()
                 }
 
             }
@@ -131,9 +145,20 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
                 override fun onReceivedIcon(view: WebView?, icon: Bitmap?) {
                     super.onReceivedIcon(view, icon)
                     try {
+                        // Set the web icon in the bottom search bar
                         mainActivityRef.binding.webIcon.setImageBitmap(icon)
+                        web_favicon = icon
+                        // Check if the page is bookmarked and update the bookmark icon
+                        MainActivity.bookmarkIndex = mainActivityRef.isBookmarked(view?.url!!)
+                        if (MainActivity.bookmarkIndex != -1) {
+                            val array = ByteArrayOutputStream()
+                            icon!!.compress(Bitmap.CompressFormat.PNG, 100, array)
+                            // Update the image of the bookmark with the new icon
+                            MainActivity.bookmarkList[MainActivity.bookmarkIndex].image =
+                                array.toByteArray()
+                        }
                     } catch (e: Exception) {
-
+                        // Handle exceptions that might occur while updating the icon
                     }
                 }
             }
@@ -163,6 +188,9 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
 
     override fun onPause() {
         super.onPause()
+        // Save all Bookmarks
+        (requireActivity() as MainActivity).saveAllBookmarks()
+
         binding.webView.apply {
             // clear search matches
             clearMatches()

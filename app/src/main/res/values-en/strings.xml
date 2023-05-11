@@ -17,5 +17,21 @@
     <string name="save_button_text">Save button</string>
     <string name="fullscrenn_button_text">Fullscreen button</string>
 
+    <!--    Bookmarks-->
+    <string name="bookmark_g">G</string>
+    <string name="bookmark_text">Bookmark</string>
+    <string name="bookmark_name">Bookmark name</string>
+    <string name="bookmark_title">Add bookmark</string>
+    <string name="bookmark_add_button">Add</string>
+    <string name="bookmark_cancel_button">Cancel</string>
+    <string name="bookmark_message">Url: www.google.com</string>
+    <string name="bookmark_remove">Remove bookmark</string>
+    <string name="bookmark_remove_button">Remove</string>
+    <string name="bookmarks_view_all">View all</string>
+    <string name="bookmarks_all_title">Bookmarks</string>
+
+
+
+
 
 </resources>

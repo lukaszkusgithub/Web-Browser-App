@@ -17,5 +17,22 @@
     <string name="save_button_text">Zapisz strone</string>
     <string name="fullscrenn_button_text">Pełny ekran</string>
 
+    <!--    Bookmarks-->
+    <string name="bookmark_g">G</string>
+    <string name="bookmark_text">Zakładka</string>
+    <string name="bookmark_name">Nazwa zakładki</string>
+    <string name="bookmark_title">Dodaj zakładke</string>
+    <string name="bookmark_add_button">Dodaj</string>
+    <string name="bookmark_cancel_button">Anuluj</string>
+    <string name="bookmark_message">Url: www.google.com</string>
+    <string name="bookmark_remove">Usuń zakładke</string>
+    <string name="bookmark_remove_button">Usuń</string>
+    <string name="bookmarks_view_all">Zakładki</string>
+    <string name="bookmarks_all_title">Zakładki</string>
+
+
+
+
+
 
 </resources>

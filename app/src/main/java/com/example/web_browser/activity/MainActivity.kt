@@ -1,23 +1,24 @@
-package com.example.web_browser
+package com.example.web_browser.activity
 
-import OnDayNightStateChanged
-import android.R.attr
+import com.example.web_browser.`interface`.OnDayNightStateChanged
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
+import android.content.DialogInterface.BUTTON_POSITIVE
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.os.Build.VERSION_CODES.S
 import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintJob
 import android.print.PrintManager
+import android.system.Os.remove
+import android.view.ContextThemeWrapper
 import android.view.Gravity
-import android.view.View
 import android.view.WindowManager
 import android.webkit.WebView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.*
@@ -30,15 +31,25 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.web_browser.fragment.BrowseFragment
+import com.example.web_browser.fragment.HomeFragment
+import com.example.web_browser.model.Bookmark
+import com.example.web_browser.R
 import com.example.web_browser.databinding.ActivityMainBinding
+import com.example.web_browser.databinding.BookmarkDialogBinding
+import com.example.web_browser.databinding.BookmarkViewBinding
 import com.example.web_browser.databinding.MoreToolsBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import java.io.ByteArrayOutputStream
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 @Suppress("DEPRECATION")
@@ -62,8 +73,7 @@ class MainActivity : AppCompatActivity() {
         var tabsList: ArrayList<Fragment> = ArrayList()
         private var isFullscreen: Boolean = false
         var isDesktopSite: Boolean = false
-
-        //        var bookmarkList: ArrayList<Bookmark> = ArrayList()
+        var bookmarkList: ArrayList<Bookmark> = ArrayList()
         var bookmarkIndex: Int = -1
         lateinit var myPager: ViewPager2
         lateinit var tabsBtn: MaterialTextView
@@ -84,6 +94,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         // Set the activity layout to the view created by binding
         setContentView(binding.root)
+        // Get bookmarks from SharedPreferences
+        getAllBookmarks()
         // Add the first fragment to the tabsList
         tabsList.add(HomeFragment())
         // Set the adapter for ViewPager2 and disable user interaction
@@ -105,18 +117,17 @@ class MainActivity : AppCompatActivity() {
 
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            recreate()
+            this.recreate()
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            recreate()
+            this.recreate()
         }
         supportFragmentManager.fragments.forEach {
-            if(it is OnDayNightStateChanged){
+            if (it is OnDayNightStateChanged) {
                 it.onDayNightApplied()
             }
         }
     }
-
 
     @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
@@ -220,6 +231,38 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            // This code block checks if the fragment object is not null by using the let function.
+            fragmet?.let {
+                // If it is not null, it assigns the index of the current webpage to
+                // bookmarkIndex variable by calling isBookmarked function.
+                bookmarkIndex = isBookmarked(it.binding.webView.url!!)
+                // If the webpage is already bookmarked, the bookmark button's
+                // text color is changed to the accent_dark_night color.
+                if (bookmarkIndex != -1) {
+                    dialogBinding.bookmarkButton.apply {
+                        setTextColor(
+                            ContextCompat.getColor(
+                                this@MainActivity,
+                                R.color.accent_dark_night
+                            )
+                        )
+                    }
+                }
+            }
+
+            // This code block checks if the isDesktopSite variable is true.
+            if (isDesktopSite) {
+                // If it is true, the text color of the desktopButton is changed to the accent_dark_night color.
+                dialogBinding.desktopButton.apply {
+                    setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.accent_dark_night
+                        )
+                    )
+                }
+            }
+
             // Set click listeners for the buttons in the more tools dialog
             dialogBinding.backButton.setOnClickListener {
                 onBackPressed()
@@ -246,7 +289,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            // Define a click listener for the fullscreen button in the dialog
+            // Define a click listener for the desktop site button in the dialog
             dialogBinding.fullscreenButton.setOnClickListener {
                 // Cast the view to a MaterialButton
                 it as MaterialButton
@@ -274,9 +317,132 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
             }
+
+            // This code block sets an onClickListener for the desktopButton.
+            dialogBinding.desktopButton.setOnClickListener {
+                // Cast the view to a MaterialButton
+                it as MaterialButton
+                // If the activity is currently in desktop site mode, disable it and
+                // update button text color to white.
+                fragmet?.binding?.webView?.apply {
+                    isDesktopSite = if (isDesktopSite) {
+                        settings.userAgentString = null
+                        it.setTextColor(
+                            ContextCompat.getColor(
+                                this@MainActivity,
+                                com.google.android.material.R.color.design_default_color_on_secondary
+                            )
+                        )
+                        false
+                        // If the activity is currently not in desktop site mode,
+                        // enable it and update button text color to accent_dark_night.
+                    } else {
+                        // Enable desktop site mode and update button text color to accent_dark_night
+                        settings.userAgentString =
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0"
+                        settings.useWideViewPort = true
+                        evaluateJavascript(
+                            "document.querySelector('meta[name=\"viewport\"]').setAttribute('content'," +
+                                    " 'width=1024px, initial-scale=' + (document.documentElement.clientWidth / 1024));",
+                            null
+                        )
+                        it.setTextColor(
+                            ContextCompat.getColor(
+                                this@MainActivity,
+                                R.color.accent_dark_night
+                            )
+                        )
+                        true
+                    }
+                    // Reload the webview and dismiss the dialog.
+                    reload()
+                    dialog.dismiss()
+                }
+            }
+
+            // Bookmarks Button action
+            dialogBinding.bookmarkButton.setOnClickListener {
+                // Check if fragment is not null
+                fragmet?.let {
+                    // Check if the current web page is already bookmarked
+                    if (bookmarkIndex == -1) {
+                        // If not bookmarked, inflate and show bookmark dialog
+                        val viewBookmark =
+                            layoutInflater.inflate(R.layout.bookmark_dialog, binding.root, false)
+                        val bookmarkBinding = BookmarkDialogBinding.bind(viewBookmark)
+
+                        val dialogBookmark =
+                            AlertDialog.Builder(
+                                ContextThemeWrapper(
+                                    this,
+                                    R.style.AlertDialogThemeAdd
+                                )
+                            ).setTitle(R.string.bookmark_title)
+                                .setMessage("Url: ${it.binding.webView.url!!}")
+                                .setPositiveButton(R.string.bookmark_add_button) { self, _ ->
+                                    // Try get favicon
+                                    try {
+                                        val array = ByteArrayOutputStream()
+                                        it.web_favicon?.compress(
+                                            Bitmap.CompressFormat.PNG,
+                                            100,
+                                            array
+                                        )
+                                        // Add new bookmark to the list with icon
+                                        bookmarkList.add(
+                                            Bookmark(
+                                                name = bookmarkBinding.bookmarkTitle.text.toString(),
+                                                url = it.binding.webView.url!!, array.toByteArray()
+                                            )
+                                        )
+                                    } catch (e: Exception) {
+                                        // Add new bookmark to the list iwhout icon
+                                        bookmarkList.add(
+                                            Bookmark(
+                                                name = bookmarkBinding.bookmarkTitle.text.toString(),
+                                                url = it.binding.webView.url!!
+                                            )
+                                        )
+                                    }
+                                    self.dismiss()
+                                }.setNegativeButton(R.string.bookmark_cancel_button) { self, _ ->
+                                    self.dismiss()
+                                }
+                                .setView(viewBookmark).create()
+
+
+                        dialogBookmark.show()
+                        // Set default bookmark title to current page title
+                        bookmarkBinding.bookmarkTitle.setText(it.binding.webView.title!!)
+                    } else {
+                        // If bookmark already exists, show remove bookmark dialog
+                        val dialogBookmark =
+                            AlertDialog.Builder(
+                                ContextThemeWrapper(
+                                    this,
+                                    R.style.AlertDialogThemeRemove
+                                )
+                            ).setTitle(R.string.bookmark_remove_button)
+                                .setMessage("Url: ${it.binding.webView.url!!}")
+                                .setPositiveButton(R.string.bookmark_remove) { self, _ ->
+                                    // Remove bookmark from the list
+                                    bookmarkList.removeAt(bookmarkIndex)
+                                    self.dismiss()
+                                }.setNegativeButton(R.string.bookmark_cancel_button) { self, _ ->
+                                    self.dismiss()
+                                }.create()
+
+                        dialogBookmark.show()
+                    }
+                }
+                // Close the dialog
+                dialog.dismiss()
+            }
+
         }
     }
 
+    // Resume Func
     override fun onResume() {
         super.onResume()
         printJob?.let {
@@ -296,7 +462,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
 
     // Print Page as PDF
     private fun saveWebAsPDF(web: WebView) {
@@ -341,4 +506,45 @@ class MainActivity : AppCompatActivity() {
             ).show(WindowInsetsCompat.Type.systemBars())
         }
     }
+
+    // code defines a function isBookmarked that takes a String parameter url and
+    // returns an Int.
+    fun isBookmarked(url: String): Int {
+        // Iterate over each bookmark in the bookmarkList with its index
+        bookmarkList.forEachIndexed { index, bookmark ->
+            // If the current bookmark's URL matches the provided URL, return the current index
+            if (bookmark.url == url) return index
+        }
+        // If no bookmarks match the provided URL, return -1
+        return -1
+    }
+
+    // Save all bookmarks to SharedPreferences
+    fun saveAllBookmarks() {
+        val editor = getSharedPreferences("BOOKMARKS", MODE_PRIVATE).edit()
+        // Convert bookmarkList to a JSON string using Gson
+        val data = GsonBuilder().create().toJson(bookmarkList)
+        // Save the JSON string to SharedPreferences
+        editor.putString("bookmarkList", data)
+        editor.apply()
+    }
+
+    // Load all bookmarks from SharedPreferences
+    fun getAllBookmarks() {
+        bookmarkList = ArrayList()
+        val editor = getSharedPreferences("BOOKMARKS", MODE_PRIVATE)
+        // Retrieve the JSON string from SharedPreferences
+        val data = editor.getString("bookmarkList", null)
+
+        if (data != null) {
+            // Convert the JSON string to an ArrayList<Bookmark> using Gson
+            val list: ArrayList<Bookmark> = GsonBuilder().create()
+                .fromJson(data, object : TypeToken<ArrayList<Bookmark>>() {}.type)
+            // Add all bookmarks to bookmarkList
+            bookmarkList.addAll(list)
+        }
+
+    }
+
+
 }
