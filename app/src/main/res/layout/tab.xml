@@ -17,7 +17,7 @@
         android:layout_marginHorizontal="15dp"/>
 
     <TextView
-        android:id="@+id/bookmarkName"
+        android:id="@+id/tabName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="@string/bookmark_text"

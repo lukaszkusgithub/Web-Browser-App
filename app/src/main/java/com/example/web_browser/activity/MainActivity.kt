@@ -3,8 +3,6 @@ package com.example.web_browser.activity
 import com.example.web_browser.`interface`.OnDayNightStateChanged
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
-import android.content.DialogInterface.BUTTON_POSITIVE
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.ConnectivityManager
@@ -14,7 +12,6 @@ import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintJob
 import android.print.PrintManager
-import android.system.Os.remove
 import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.WindowManager
@@ -24,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -32,19 +28,20 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.web_browser.fragment.BrowseFragment
 import com.example.web_browser.fragment.HomeFragment
 import com.example.web_browser.model.Bookmark
 import com.example.web_browser.R
-import com.example.web_browser.activity.MainActivity.Companion.bookmarkList
 import com.example.web_browser.activity.MainActivity.Companion.pager
+import com.example.web_browser.adapter.TabAdapter
 import com.example.web_browser.databinding.ActivityMainBinding
 import com.example.web_browser.databinding.BookmarkDialogBinding
-import com.example.web_browser.databinding.BookmarkViewBinding
 import com.example.web_browser.databinding.MoreToolsBinding
 import com.example.web_browser.databinding.TabsManagerViewBinding
+import com.example.web_browser.model.Tab
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -76,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     // Declaration of the myPager variable as an object of the ViewPager2 class
     // Declaration of the tabsBtn variable as an object of the MaterialTextView class
     companion object {
-        var tabsList: ArrayList<Fragment> = ArrayList()
+        var tabsList: ArrayList<Tab> = ArrayList()
         private var isFullscreen: Boolean = false
         var isDesktopSite: Boolean = false
         var bookmarkList: ArrayList<Bookmark> = ArrayList()
@@ -103,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         // Get bookmarks from SharedPreferences
         getAllBookmarks()
         // Add the first fragment to the tabsList
-        tabsList.add(HomeFragment())
+        tabsList.add(Tab("Home", HomeFragment()))
         // Set the adapter for ViewPager2 and disable user interaction
         binding.pager.adapter = TabsAdapter(supportFragmentManager, lifecycle)
         binding.pager.isUserInputEnabled = false
@@ -167,7 +164,7 @@ class MainActivity : AppCompatActivity() {
         FragmentStateAdapter(fa, lc) {
         override fun getItemCount(): Int = tabsList.size
 
-        override fun createFragment(position: Int): Fragment = tabsList[position]
+        override fun createFragment(position: Int): Fragment = tabsList[position].fragment
     }
 
     // Initializes the view and sets the onClickListener for the settingButton.
@@ -183,9 +180,17 @@ class MainActivity : AppCompatActivity() {
             val dialogTabs =
                 MaterialAlertDialogBuilder(this, R.style.roundCornerDialog).setView(viewTabs)
                     .setTitle(R.string.tabs_title)
-                    .setPositiveButton(R.string.tabs_home) { self, _ -> self.dismiss() }
-                    .setNeutralButton(R.string.google_site) { self, _ -> self.dismiss() }
+                    .setPositiveButton(R.string.tabs_home) { self, _ ->
+                        changeTab("Home", HomeFragment())
+                        self.dismiss() }
+                    .setNeutralButton(R.string.google_site) { self, _ ->
+                        changeTab("Google", BrowseFragment(query = "www.google.com"))
+                        self.dismiss() }
                     .create()
+
+            bindingTabs.tabsRecyclerView.setHasFixedSize(true)
+            bindingTabs.tabsRecyclerView.layoutManager = LinearLayoutManager(this)
+            bindingTabs.tabsRecyclerView.adapter = TabAdapter(this, dialogTabs)
 
             dialogTabs.show()
 
@@ -568,7 +573,7 @@ class MainActivity : AppCompatActivity() {
 
 // Adds a new tab (Fragment) to the ViewPager
 fun changeTab(query: String, fragment: Fragment) {
-    MainActivity.tabsList.add(fragment)
+    MainActivity.tabsList.add(Tab(name = query, fragment = fragment))
     pager.adapter?.notifyDataSetChanged()
     pager.currentItem = MainActivity.tabsList.size - 1
 }
