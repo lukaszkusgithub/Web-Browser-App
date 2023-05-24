@@ -9,6 +9,8 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.RecyclerView
 import com.example.web_browser.R
 import com.example.web_browser.activity.MainActivity
+import com.example.web_browser.activity.changeTab
+import com.example.web_browser.activity.checkForInternetConnection
 import com.example.web_browser.databinding.BookmarkViewBinding
 import com.example.web_browser.databinding.LongBookmarkViewBinding
 import com.example.web_browser.fragment.BrowseFragment
@@ -87,13 +89,12 @@ class BookmarkAdapter(private val context: Context, private val isActivity: Bool
         // Set a click listener on the holder root view to open the corresponding bookmark in
         // a new tab or show a snackbar if internet connection is not available
         holder.root.setOnClickListener {
-            context as MainActivity
             when {
                 // Check if internet connection is available
-                context.checkForInternetConnection(context) -> {
+                checkForInternetConnection(context) -> {
                     // If internet connection is available, open the corresponding
                     // bookmark in a new tab and close the current activity if it is an activity
-                    context.changeTab(
+                    changeTab(
                         MainActivity.bookmarkList[position].name,
                         BrowseFragment(query = MainActivity.bookmarkList[position].url)
                     )
@@ -101,7 +102,7 @@ class BookmarkAdapter(private val context: Context, private val isActivity: Bool
                 }
                 // If internet connection is not available, show a
                 // snackbar with an appropriate message
-                else -> Snackbar.make(holder.root, "Internet Not Connected", 3000)
+                else -> Snackbar.make(holder.root, R.string.internet_error, 3000)
                     .show()
             }
         }

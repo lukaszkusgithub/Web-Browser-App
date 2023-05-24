@@ -30,6 +30,14 @@
     <string name="bookmarks_view_all">View all</string>
     <string name="bookmarks_all_title">Bookmarks</string>
 
+    <!--    Tabs -->
+    <string name="no_website_to_save">No website to save</string>
+    <string name="internet_error">No Interned connected</string>
+    <string name="tabs_home">Home</string>
+    <string name="google_site">Google</string>
+    <string name="tabs_title">Select Tab</string>
+
+
 
 
 

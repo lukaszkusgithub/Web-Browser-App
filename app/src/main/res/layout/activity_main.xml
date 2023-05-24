@@ -68,25 +68,29 @@
                 tools:ignore="TextContrastCheck" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tabsBtn"
+                android:id="@+id/tabsButton"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="4dp"
-                android:layout_marginVertical="8dp"
+                android:layout_marginVertical="1dp"
                 android:gravity="center"
                 android:singleLine="true"
+                android:textStyle="bold"
+                android:textSize="16dp"
                 android:text="@string/tabs"
                 android:textColor="?attr/colorOnSecondary"
+                android:background="@drawable/custom_tabs_text_view"
                 tools:ignore="RedundantDescriptionCheck" />
 
             <ImageButton
-                android:id="@+id/refreshBtn"
+                android:id="@+id/refreshButton"
                 android:layout_width="48dp"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/refresh_button"
                 android:src="@drawable/ic_refresh"
                 app:tint="?attr/colorOnSecondary"
+                android:visibility="gone"
                 tools:ignore="RedundantDescriptionCheck" />
 
             <ImageButton

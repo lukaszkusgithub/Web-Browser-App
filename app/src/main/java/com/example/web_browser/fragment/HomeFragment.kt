@@ -14,6 +14,8 @@ import com.example.web_browser.adapter.BookmarkAdapter
 import com.example.web_browser.activity.MainActivity
 import com.example.web_browser.R
 import com.example.web_browser.activity.BookmarkActivity
+import com.example.web_browser.activity.changeTab
+import com.example.web_browser.activity.checkForInternetConnection
 import com.example.web_browser.databinding.FragmentHomeBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -46,13 +48,16 @@ class HomeFragment : Fragment(), OnDayNightStateChanged {
         // Set web icon to search icon
         mainActivityRef.binding.webIcon.setImageResource(R.drawable.ic_search)
 
+        // TODO
+        mainActivityRef.binding.refreshButton.visibility = View.GONE
+
         // Set a listener for searchViewHome and check for internet connection,
         // change the tab based on the result
         binding.searchViewHome.setOnQueryTextListener(object :
             android.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                if (mainActivityRef.checkForInternetConnection(requireContext()))
-                    mainActivityRef.changeTab(query!!, BrowseFragment(query))
+                if (checkForInternetConnection(requireContext()))
+                    changeTab(query!!, BrowseFragment(query))
                 else
                     Snackbar.make(binding.root, "Check your connection", 3000).show()
                 return true
@@ -64,8 +69,8 @@ class HomeFragment : Fragment(), OnDayNightStateChanged {
         // Set a listener for the goButton in bottomSearchBar and check for internet connection,
         // change the tab based on the result
         mainActivityRef.binding.goButton.setOnClickListener {
-            if (mainActivityRef.checkForInternetConnection(requireContext()))
-                mainActivityRef.changeTab(
+            if (checkForInternetConnection(requireContext()))
+                changeTab(
                     mainActivityRef.binding.bottomSearchBar.text.toString(),
                     BrowseFragment(mainActivityRef.binding.bottomSearchBar.text.toString())
                 )

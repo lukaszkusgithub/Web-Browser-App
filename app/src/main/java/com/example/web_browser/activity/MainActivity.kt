@@ -3,6 +3,7 @@ package com.example.web_browser.activity
 import com.example.web_browser.`interface`.OnDayNightStateChanged
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.DialogInterface.BUTTON_POSITIVE
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -23,6 +24,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -35,10 +38,13 @@ import com.example.web_browser.fragment.BrowseFragment
 import com.example.web_browser.fragment.HomeFragment
 import com.example.web_browser.model.Bookmark
 import com.example.web_browser.R
+import com.example.web_browser.activity.MainActivity.Companion.bookmarkList
+import com.example.web_browser.activity.MainActivity.Companion.pager
 import com.example.web_browser.databinding.ActivityMainBinding
 import com.example.web_browser.databinding.BookmarkDialogBinding
 import com.example.web_browser.databinding.BookmarkViewBinding
 import com.example.web_browser.databinding.MoreToolsBinding
+import com.example.web_browser.databinding.TabsManagerViewBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -75,8 +81,8 @@ class MainActivity : AppCompatActivity() {
         var isDesktopSite: Boolean = false
         var bookmarkList: ArrayList<Bookmark> = ArrayList()
         var bookmarkIndex: Int = -1
-        lateinit var myPager: ViewPager2
-        lateinit var tabsBtn: MaterialTextView
+        lateinit var pager: ViewPager2
+        lateinit var tabsButton: MaterialTextView
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         // Set the adapter for ViewPager2 and disable user interaction
         binding.pager.adapter = TabsAdapter(supportFragmentManager, lifecycle)
         binding.pager.isUserInputEnabled = false
-
+        pager = binding.pager
         initializeView()
 
         changeFullscreen(enable = false)
@@ -164,36 +170,48 @@ class MainActivity : AppCompatActivity() {
         override fun createFragment(position: Int): Fragment = tabsList[position]
     }
 
-    // Adds a new tab (Fragment) to the ViewPager
-    fun changeTab(query: String, fragment: Fragment) {
-        tabsList.add(fragment)
-        binding.pager.adapter?.notifyDataSetChanged()
-        binding.pager.currentItem = tabsList.size - 1
-    }
-
-    // Checks if there is an internet connection available
-    fun checkForInternetConnection(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = connectivityManager.activeNetwork ?: return false
-            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
-
-            return when {
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                else -> false
-            }
-        } else {
-            @Suppress("DEPRECATION") val networkInfo =
-                connectivityManager.activeNetworkInfo ?: return false
-            @Suppress("DEPRECATION") return networkInfo.isConnected
-        }
-    }
-
     // Initializes the view and sets the onClickListener for the settingButton.
     private fun initializeView() {
+        // TODO
+        binding.tabsButton.setOnClickListener {
+            // Inflate the layout for the more tools dialog
+            val viewTabs =
+                layoutInflater.inflate(R.layout.tabs_manager_view, binding.root, false)
+            val bindingTabs = TabsManagerViewBinding.bind(viewTabs)
+
+            // Create and display the more tools dialog
+            val dialogTabs =
+                MaterialAlertDialogBuilder(this, R.style.roundCornerDialog).setView(viewTabs)
+                    .setTitle(R.string.tabs_title)
+                    .setPositiveButton(R.string.tabs_home) { self, _ -> self.dismiss() }
+                    .setNeutralButton(R.string.google_site) { self, _ -> self.dismiss() }
+                    .create()
+
+            dialogTabs.show()
+
+            val positiveButton = dialogTabs.getButton(AlertDialog.BUTTON_POSITIVE)
+            val neutralButton = dialogTabs.getButton(AlertDialog.BUTTON_NEUTRAL)
+
+            positiveButton.isAllCaps = false
+            neutralButton.isAllCaps = false
+
+            positiveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.ic_home,
+                    theme
+                ), null, null, null
+            )
+            neutralButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.ic_add,
+                    theme
+                ), null, null, null
+            )
+
+        }
+
         // When clicked, a dialog box will appear with additional tools.
         binding.settingButton.setOnClickListener {
             // Initialize variable for current fragment
@@ -285,7 +303,7 @@ class MainActivity : AppCompatActivity() {
                     saveWebAsPDF(web = fragmet.binding.webView)
                 } else {
                     // Display a Snackbar if no website is available to save
-                    Snackbar.make(binding.root, "No website to save", 3000)
+                    Snackbar.make(binding.root, R.string.no_website_to_save, 3000)
                 }
             }
 
@@ -508,7 +526,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // code defines a function isBookmarked that takes a String parameter url and
-    // returns an Int.
+// returns an Int.
     fun isBookmarked(url: String): Int {
         // Iterate over each bookmark in the bookmarkList with its index
         bookmarkList.forEachIndexed { index, bookmark ->
@@ -546,5 +564,32 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+}
 
+// Adds a new tab (Fragment) to the ViewPager
+fun changeTab(query: String, fragment: Fragment) {
+    MainActivity.tabsList.add(fragment)
+    pager.adapter?.notifyDataSetChanged()
+    pager.currentItem = MainActivity.tabsList.size - 1
+}
+
+// Checks if there is an internet connection available
+fun checkForInternetConnection(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            else -> false
+        }
+    } else {
+        @Suppress("DEPRECATION") val networkInfo =
+            connectivityManager.activeNetworkInfo ?: return false
+        @Suppress("DEPRECATION") return networkInfo.isConnected
+    }
 }

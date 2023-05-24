@@ -63,6 +63,12 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
         // Get a reference to the MainActivity
         val mainActivityRef = requireActivity() as MainActivity
 
+        // TODO
+        mainActivityRef.binding.refreshButton.visibility = View.VISIBLE
+        mainActivityRef.binding.refreshButton.setOnClickListener {
+            binding.webView.reload()
+        }
+
         // Set up the WebView with appropriate settings and clients
         binding.webView.apply {
             settings.javaScriptEnabled = true
