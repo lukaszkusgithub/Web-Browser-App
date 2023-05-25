@@ -1,6 +1,7 @@
 package com.example.web_browser.activity
 
-import com.example.web_browser.`interface`.OnDayNightStateChanged
+//import android.R
+//import android.os.Build.VERSION_CODES.R
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
@@ -12,6 +13,7 @@ import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintJob
 import android.print.PrintManager
+import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.WindowManager
@@ -31,17 +33,19 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.example.web_browser.fragment.BrowseFragment
-import com.example.web_browser.fragment.HomeFragment
-import com.example.web_browser.model.Bookmark
 import com.example.web_browser.R
+import com.example.web_browser.`interface`.OnDayNightStateChanged
 import com.example.web_browser.activity.MainActivity.Companion.pager
 import com.example.web_browser.activity.MainActivity.Companion.tabsButton
+import com.example.web_browser.activity.MainActivity.Companion.tabsList
 import com.example.web_browser.adapter.TabAdapter
 import com.example.web_browser.databinding.ActivityMainBinding
 import com.example.web_browser.databinding.BookmarkDialogBinding
 import com.example.web_browser.databinding.MoreToolsBinding
 import com.example.web_browser.databinding.TabsManagerViewBinding
+import com.example.web_browser.fragment.BrowseFragment
+import com.example.web_browser.fragment.HomeFragment
+import com.example.web_browser.model.Bookmark
 import com.example.web_browser.model.Tab
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

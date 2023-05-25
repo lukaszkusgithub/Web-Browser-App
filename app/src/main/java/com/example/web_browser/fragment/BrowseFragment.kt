@@ -57,14 +57,6 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
 
         // Load the URL into the webview based on the value of the query variable
         binding.webView.apply {
-//            when {
-//                // If the query is a valid URL, load the URL
-//                URLUtil.isValidUrl(query) -> loadUrl(query)
-//                // If the query contains ".com" (ignoring case), assume it is a URL and load it
-//                query.contains(".com", ignoreCase = true) -> loadUrl(query)
-//                // Otherwise, search Google for the query
-//                else -> loadUrl("https://www.google.com/search?q=$query")
-//            }
             // Load the appropriate URL based on the value of the query variable
             when {
                 URLUtil.isValidUrl(query) -> loadUrl(query)
@@ -222,6 +214,8 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
         super.onPause()
         // Save all Bookmarks
         (requireActivity() as MainActivity).saveAllBookmarks()
+//        // Save all Tabs
+//        (requireActivity() as MainActivity).saveAllTabs()
 
         binding.webView.apply {
             // clear search matches
