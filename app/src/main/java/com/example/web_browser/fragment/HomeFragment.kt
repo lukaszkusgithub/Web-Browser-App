@@ -24,8 +24,7 @@ class HomeFragment : Fragment(), OnDayNightStateChanged {
     private lateinit var binding: FragmentHomeBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflating the view from the XML file
         val view = inflater.inflate(R.layout.fragment_home, container, false)
@@ -40,6 +39,10 @@ class HomeFragment : Fragment(), OnDayNightStateChanged {
 
         // Get a reference to the MainActivity object
         val mainActivityRef = requireActivity() as MainActivity
+
+        // Set tab name to Home
+        MainActivity.tabsButton.text = MainActivity.tabsList.size.toString()
+        MainActivity.tabsList[MainActivity.pager.currentItem].name = "Home"
 
         // Clear the text in searchViewHome and bottomSearchBar
         mainActivityRef.binding.bottomSearchBar.setText("")
@@ -56,10 +59,11 @@ class HomeFragment : Fragment(), OnDayNightStateChanged {
         binding.searchViewHome.setOnQueryTextListener(object :
             android.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                if (checkForInternetConnection(requireContext()))
-                    changeTab(query!!, BrowseFragment(query))
-                else
-                    Snackbar.make(binding.root, "Check your connection", 3000).show()
+                if (checkForInternetConnection(requireContext())) changeTab(
+                    query!!,
+                    BrowseFragment(query)
+                )
+                else Snackbar.make(binding.root, "Check your connection", 3000).show()
                 return true
             }
 
@@ -69,13 +73,11 @@ class HomeFragment : Fragment(), OnDayNightStateChanged {
         // Set a listener for the goButton in bottomSearchBar and check for internet connection,
         // change the tab based on the result
         mainActivityRef.binding.goButton.setOnClickListener {
-            if (checkForInternetConnection(requireContext()))
-                changeTab(
-                    mainActivityRef.binding.bottomSearchBar.text.toString(),
-                    BrowseFragment(mainActivityRef.binding.bottomSearchBar.text.toString())
-                )
-            else
-                Snackbar.make(binding.root, "Check your connection", 3000).show()
+            if (checkForInternetConnection(requireContext())) changeTab(
+                mainActivityRef.binding.bottomSearchBar.text.toString(),
+                BrowseFragment(mainActivityRef.binding.bottomSearchBar.text.toString())
+            )
+            else Snackbar.make(binding.root, "Check your connection", 3000).show()
         }
 
 

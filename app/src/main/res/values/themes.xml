@@ -1,6 +1,4 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.Web_browser" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
@@ -12,12 +10,18 @@
         <item name="colorSecondaryVariant">@color/accent_dark_night</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" >@color/accent_dark_night</item>
+        <item name="android:statusBarColor">@color/accent_dark_night</item>
         <!-- Customize your theme here. -->
         <item name="android:textColorHint">@color/gray</item>
         <item name="android:textColor">@color/black</item>
+
+        <!-- Snackbar -->
+        <item name="snackbarStyle">@style/MaterialSnackbarTheme</item>
+        <item name="snackbarButtonStyle">@style/MaterialSnackbarTextButtonTheme</item>
+        <item name="snackbarTextViewStyle">@style/MaterialSnackbarTextViewTheme</item>
     </style>
 
+    <!--    Tabs dialog style-->
     <style name="roundCornerDialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="shapeAppearanceOverlay">
             @style/shape
@@ -47,6 +51,23 @@
         <item name="android:textColor">?attr/colorOnSecondary</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">20sp</item>
+    </style>
+
+    <!--    snackabr-->
+    <style name="MaterialSnackbarTheme" parent="@style/Widget.MaterialComponents.Snackbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="cornerRadius">0dp</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="actionTextColorAlpha">1.0</item>
+    </style>
+
+    <style name="MaterialSnackbarTextButtonTheme" parent="@style/Widget.MaterialComponents.Button.TextButton.Snackbar">
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+    </style>
+
+    <style name="MaterialSnackbarTextViewTheme" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:alpha">1.0</item>
     </style>
 
 

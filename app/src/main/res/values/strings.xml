@@ -36,6 +36,7 @@
     <string name="tabs_home">Home</string>
     <string name="google_site">Google</string>
     <string name="tabs_title">Select Tab</string>
+    <string name="error_tab_remove">Cant remove this tab</string>
 
 
 </resources>

@@ -27,13 +27,14 @@ class BookmarkAdapter(private val context: Context, private val isActivity: Bool
     // MyHolder class represents the ViewHolder for the adapter
     // It takes two nullable parameters for different view bindings
     class MyHolder(
-        binding: BookmarkViewBinding? = null,
-        bindingLong: LongBookmarkViewBinding? = null
+        binding: BookmarkViewBinding? = null, bindingLong: LongBookmarkViewBinding? = null
     ) : RecyclerView.ViewHolder((binding?.root ?: bindingLong?.root)!!) {
         // The image view for the bookmark image
         val image = (binding?.bookmarkIcon ?: bindingLong?.bookmarkIcon)!!
+
         // The text view for the bookmark name
         val name = (binding?.bookmarkName ?: bindingLong?.bookmarkName)!!
+
         // The root view for the bookmark item
         val root = (binding?.root ?: bindingLong?.root)!!
     }
@@ -48,9 +49,7 @@ class BookmarkAdapter(private val context: Context, private val isActivity: Bool
             // of MyHolder with the inflated view
             return MyHolder(
                 bindingLong = LongBookmarkViewBinding.inflate(
-                    LayoutInflater.from(context),
-                    parent,
-                    false
+                    LayoutInflater.from(context), parent, false
                 )
             )
         }
@@ -58,9 +57,7 @@ class BookmarkAdapter(private val context: Context, private val isActivity: Bool
         // new instance of MyHolder with the inflated view
         return MyHolder(
             binding = BookmarkViewBinding.inflate(
-                LayoutInflater.from(context),
-                parent,
-                false
+                LayoutInflater.from(context), parent, false
             )
         )
     }
@@ -72,7 +69,8 @@ class BookmarkAdapter(private val context: Context, private val isActivity: Bool
             // Try to decode the image from the bookmarkList at the given position and
             // set it as background of the holder image view
             val icon = BitmapFactory.decodeByteArray(
-                MainActivity.bookmarkList[position].image, 0,
+                MainActivity.bookmarkList[position].image,
+                0,
                 MainActivity.bookmarkList[position].image!!.size
             )
             holder.image.background = icon.toDrawable(context.resources)
@@ -102,8 +100,7 @@ class BookmarkAdapter(private val context: Context, private val isActivity: Bool
                 }
                 // If internet connection is not available, show a
                 // snackbar with an appropriate message
-                else -> Snackbar.make(holder.root, R.string.internet_error, 3000)
-                    .show()
+                else -> Snackbar.make(holder.root, R.string.internet_error, 3000).show()
             }
         }
     }

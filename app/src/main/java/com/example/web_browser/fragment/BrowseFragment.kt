@@ -2,7 +2,9 @@ package com.example.web_browser.fragment
 
 import com.example.web_browser.`interface`.OnDayNightStateChanged
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
@@ -28,8 +30,7 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
     var web_favicon: Bitmap? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_browse, container, false)
@@ -59,6 +60,18 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
     @SuppressLint("SetJavaScriptEnabled")
     override fun onResume() {
         super.onResume()
+        // Set tab name to ulr
+        MainActivity.tabsList[MainActivity.pager.currentItem].name = binding.webView.url.toString()
+        MainActivity.tabsButton.text = MainActivity.tabsList.size.toString()
+
+        // Enable to download files
+        binding.webView.setDownloadListener { query, _, _, _, _ ->
+            startActivity(
+                Intent(Intent.ACTION_VIEW).setData(
+                    Uri.parse(query)
+                )
+            )
+        }
 
         // Get a reference to the MainActivity
         val mainActivityRef = requireActivity() as MainActivity
@@ -80,8 +93,7 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
                     super.onLoadResource(view, url)
                     if (MainActivity.isDesktopSite) {
                         evaluateJavascript(
-                            "document.querySelector('meta[name=\"viewport\"]').setAttribute('content'," +
-                                    " 'width=1024px, initial-scale=' + (document.documentElement.clientWidth / 1024));",
+                            "document.querySelector('meta[name=\"viewport\"]').setAttribute('content'," + " 'width=1024px, initial-scale=' + (document.documentElement.clientWidth / 1024));",
                             null
                         )
                     }
@@ -89,13 +101,11 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
 
                 // Override the doUpdateVisitedHistory method to update the text in bottomSearchBar
                 override fun doUpdateVisitedHistory(
-                    view: WebView?,
-                    url: String?,
-                    isReload: Boolean
+                    view: WebView?, url: String?, isReload: Boolean
                 ) {
                     super.doUpdateVisitedHistory(view, url, isReload)
                     mainActivityRef.binding.bottomSearchBar.text = SpannableStringBuilder(url)
-
+                    MainActivity.tabsList[MainActivity.pager.currentItem].name = url.toString()
                 }
 
                 // Show progress bar when page starts loading
@@ -173,8 +183,8 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
             when {
                 URLUtil.isValidUrl(query) -> loadUrl(query)
                 query.contains(".com", ignoreCase = true) -> {
-                    if (!query.startsWith("http://") && !query.startsWith("https://"))
-                        query = "http://" + query;
+                    if (!query.startsWith("http://") && !query.startsWith("https://")) query =
+                        "http://" + query;
                     loadUrl(query)
                 }
                 else -> loadUrl("https://www.google.com/search?q=$query")

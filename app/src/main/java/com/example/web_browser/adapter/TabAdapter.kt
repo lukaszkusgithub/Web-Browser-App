@@ -4,13 +4,16 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.web_browser.R
 import com.example.web_browser.activity.MainActivity
 import com.example.web_browser.databinding.TabBinding
+import com.google.android.material.snackbar.Snackbar
 
 // This is a RecyclerView adapter for displaying a list of tabs
 // It takes a MyHolder object as its ViewHolder
-class TabAdapter(private val context: Context, private val dialog: androidx.appcompat.app.AlertDialog) :
-    RecyclerView.Adapter<TabAdapter.MyHolder>() {
+class TabAdapter(
+    private val context: Context, private val dialog: androidx.appcompat.app.AlertDialog
+) : RecyclerView.Adapter<TabAdapter.MyHolder>() {
 
     // MyHolder class represents the ViewHolder for the adapter
     // It takes two nullable parameters for different view bindings
@@ -35,17 +38,30 @@ class TabAdapter(private val context: Context, private val dialog: androidx.appc
         // of MyHolder with the inflated view
         return MyHolder(
             TabBinding.inflate(
-                LayoutInflater.from(context),
-                parent,
-                false
+                LayoutInflater.from(context), parent, false
             )
         )
     }
 
+    // TODO
     override fun onBindViewHolder(holder: MyHolder, position: Int) {
+        holder.name.text = MainActivity.tabsList[position].name
         holder.root.setOnClickListener {
             MainActivity.pager.currentItem = position
             dialog.dismiss()
+        }
+
+        holder.cancelButton.setOnClickListener {
+            if (MainActivity.tabsList.size == 1 || position == MainActivity.pager.currentItem) Snackbar.make(
+                MainActivity.pager,
+                R.string.error_tab_remove,
+                2000
+            ).show()
+            else {
+                MainActivity.tabsList.removeAt(position)
+                notifyDataSetChanged()
+                MainActivity.pager.adapter?.notifyItemRemoved(position)
+            }
         }
     }
 

@@ -36,6 +36,7 @@ import com.example.web_browser.fragment.HomeFragment
 import com.example.web_browser.model.Bookmark
 import com.example.web_browser.R
 import com.example.web_browser.activity.MainActivity.Companion.pager
+import com.example.web_browser.activity.MainActivity.Companion.tabsButton
 import com.example.web_browser.adapter.TabAdapter
 import com.example.web_browser.databinding.ActivityMainBinding
 import com.example.web_browser.databinding.BookmarkDialogBinding
@@ -105,6 +106,8 @@ class MainActivity : AppCompatActivity() {
         binding.pager.adapter = TabsAdapter(supportFragmentManager, lifecycle)
         binding.pager.isUserInputEnabled = false
         pager = binding.pager
+        tabsButton = binding.tabsButton
+
         initializeView()
 
         changeFullscreen(enable = false)
@@ -139,7 +142,7 @@ class MainActivity : AppCompatActivity() {
         // Get the current fragment in the ViewPager
         var fragmet: BrowseFragment? = null
         try {
-            fragmet = tabsList[binding.pager.currentItem] as BrowseFragment
+            fragmet = tabsList[binding.pager.currentItem].fragment as BrowseFragment
         } catch (e: java.lang.Exception) {
 
         }
@@ -172,8 +175,7 @@ class MainActivity : AppCompatActivity() {
         // TODO
         binding.tabsButton.setOnClickListener {
             // Inflate the layout for the more tools dialog
-            val viewTabs =
-                layoutInflater.inflate(R.layout.tabs_manager_view, binding.root, false)
+            val viewTabs = layoutInflater.inflate(R.layout.tabs_manager_view, binding.root, false)
             val bindingTabs = TabsManagerViewBinding.bind(viewTabs)
 
             // Create and display the more tools dialog
@@ -182,11 +184,11 @@ class MainActivity : AppCompatActivity() {
                     .setTitle(R.string.tabs_title)
                     .setPositiveButton(R.string.tabs_home) { self, _ ->
                         changeTab("Home", HomeFragment())
-                        self.dismiss() }
-                    .setNeutralButton(R.string.google_site) { self, _ ->
+                        self.dismiss()
+                    }.setNeutralButton(R.string.google_site) { self, _ ->
                         changeTab("Google", BrowseFragment(query = "www.google.com"))
-                        self.dismiss() }
-                    .create()
+                        self.dismiss()
+                    }.create()
 
             bindingTabs.tabsRecyclerView.setHasFixedSize(true)
             bindingTabs.tabsRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -202,16 +204,12 @@ class MainActivity : AppCompatActivity() {
 
             positiveButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.ic_home,
-                    theme
+                    resources, R.drawable.ic_home, theme
                 ), null, null, null
             )
             neutralButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.ic_add,
-                    theme
+                    resources, R.drawable.ic_add, theme
                 ), null, null, null
             )
 
@@ -223,7 +221,7 @@ class MainActivity : AppCompatActivity() {
             var fragmet: BrowseFragment? = null
             // Try to get current fragment from tabsList
             try {
-                fragmet = tabsList[binding.pager.currentItem] as BrowseFragment
+                fragmet = tabsList[binding.pager.currentItem].fragment as BrowseFragment
             } catch (e: java.lang.Exception) {
                 // Do nothing if an exception is thrown
             }
@@ -247,8 +245,7 @@ class MainActivity : AppCompatActivity() {
                 dialogBinding.fullscreenButton.apply {
                     setTextColor(
                         ContextCompat.getColor(
-                            this@MainActivity,
-                            R.color.accent_dark_night
+                            this@MainActivity, R.color.accent_dark_night
                         )
                     )
                 }
@@ -265,8 +262,7 @@ class MainActivity : AppCompatActivity() {
                     dialogBinding.bookmarkButton.apply {
                         setTextColor(
                             ContextCompat.getColor(
-                                this@MainActivity,
-                                R.color.accent_dark_night
+                                this@MainActivity, R.color.accent_dark_night
                             )
                         )
                     }
@@ -279,8 +275,7 @@ class MainActivity : AppCompatActivity() {
                 dialogBinding.desktopButton.apply {
                     setTextColor(
                         ContextCompat.getColor(
-                            this@MainActivity,
-                            R.color.accent_dark_night
+                            this@MainActivity, R.color.accent_dark_night
                         )
                     )
                 }
@@ -333,8 +328,7 @@ class MainActivity : AppCompatActivity() {
                     changeFullscreen(enable = true)
                     it.setTextColor(
                         ContextCompat.getColor(
-                            this,
-                            R.color.accent_dark_night
+                            this, R.color.accent_dark_night
                         )
                     )
                     true
@@ -365,14 +359,12 @@ class MainActivity : AppCompatActivity() {
                             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0"
                         settings.useWideViewPort = true
                         evaluateJavascript(
-                            "document.querySelector('meta[name=\"viewport\"]').setAttribute('content'," +
-                                    " 'width=1024px, initial-scale=' + (document.documentElement.clientWidth / 1024));",
+                            "document.querySelector('meta[name=\"viewport\"]').setAttribute('content'," + " 'width=1024px, initial-scale=' + (document.documentElement.clientWidth / 1024));",
                             null
                         )
                         it.setTextColor(
                             ContextCompat.getColor(
-                                this@MainActivity,
-                                R.color.accent_dark_night
+                                this@MainActivity, R.color.accent_dark_night
                             )
                         )
                         true
@@ -394,44 +386,40 @@ class MainActivity : AppCompatActivity() {
                             layoutInflater.inflate(R.layout.bookmark_dialog, binding.root, false)
                         val bookmarkBinding = BookmarkDialogBinding.bind(viewBookmark)
 
-                        val dialogBookmark =
-                            AlertDialog.Builder(
-                                ContextThemeWrapper(
-                                    this,
-                                    R.style.AlertDialogThemeAdd
-                                )
-                            ).setTitle(R.string.bookmark_title)
-                                .setMessage("Url: ${it.binding.webView.url!!}")
-                                .setPositiveButton(R.string.bookmark_add_button) { self, _ ->
-                                    // Try get favicon
-                                    try {
-                                        val array = ByteArrayOutputStream()
-                                        it.web_favicon?.compress(
-                                            Bitmap.CompressFormat.PNG,
-                                            100,
-                                            array
+                        val dialogBookmark = AlertDialog.Builder(
+                            ContextThemeWrapper(
+                                this, R.style.AlertDialogThemeAdd
+                            )
+                        ).setTitle(R.string.bookmark_title)
+                            .setMessage("Url: ${it.binding.webView.url!!}")
+                            .setPositiveButton(R.string.bookmark_add_button) { self, _ ->
+                                // Try get favicon
+                                try {
+                                    val array = ByteArrayOutputStream()
+                                    it.web_favicon?.compress(
+                                        Bitmap.CompressFormat.PNG, 100, array
+                                    )
+                                    // Add new bookmark to the list with icon
+                                    bookmarkList.add(
+                                        Bookmark(
+                                            name = bookmarkBinding.bookmarkTitle.text.toString(),
+                                            url = it.binding.webView.url!!,
+                                            array.toByteArray()
                                         )
-                                        // Add new bookmark to the list with icon
-                                        bookmarkList.add(
-                                            Bookmark(
-                                                name = bookmarkBinding.bookmarkTitle.text.toString(),
-                                                url = it.binding.webView.url!!, array.toByteArray()
-                                            )
+                                    )
+                                } catch (e: Exception) {
+                                    // Add new bookmark to the list iwhout icon
+                                    bookmarkList.add(
+                                        Bookmark(
+                                            name = bookmarkBinding.bookmarkTitle.text.toString(),
+                                            url = it.binding.webView.url!!
                                         )
-                                    } catch (e: Exception) {
-                                        // Add new bookmark to the list iwhout icon
-                                        bookmarkList.add(
-                                            Bookmark(
-                                                name = bookmarkBinding.bookmarkTitle.text.toString(),
-                                                url = it.binding.webView.url!!
-                                            )
-                                        )
-                                    }
-                                    self.dismiss()
-                                }.setNegativeButton(R.string.bookmark_cancel_button) { self, _ ->
-                                    self.dismiss()
+                                    )
                                 }
-                                .setView(viewBookmark).create()
+                                self.dismiss()
+                            }.setNegativeButton(R.string.bookmark_cancel_button) { self, _ ->
+                                self.dismiss()
+                            }.setView(viewBookmark).create()
 
 
                         dialogBookmark.show()
@@ -439,21 +427,19 @@ class MainActivity : AppCompatActivity() {
                         bookmarkBinding.bookmarkTitle.setText(it.binding.webView.title!!)
                     } else {
                         // If bookmark already exists, show remove bookmark dialog
-                        val dialogBookmark =
-                            AlertDialog.Builder(
-                                ContextThemeWrapper(
-                                    this,
-                                    R.style.AlertDialogThemeRemove
-                                )
-                            ).setTitle(R.string.bookmark_remove_button)
-                                .setMessage("Url: ${it.binding.webView.url!!}")
-                                .setPositiveButton(R.string.bookmark_remove) { self, _ ->
-                                    // Remove bookmark from the list
-                                    bookmarkList.removeAt(bookmarkIndex)
-                                    self.dismiss()
-                                }.setNegativeButton(R.string.bookmark_cancel_button) { self, _ ->
-                                    self.dismiss()
-                                }.create()
+                        val dialogBookmark = AlertDialog.Builder(
+                            ContextThemeWrapper(
+                                this, R.style.AlertDialogThemeRemove
+                            )
+                        ).setTitle(R.string.bookmark_remove_button)
+                            .setMessage("Url: ${it.binding.webView.url!!}")
+                            .setPositiveButton(R.string.bookmark_remove) { self, _ ->
+                                // Remove bookmark from the list
+                                bookmarkList.removeAt(bookmarkIndex)
+                                self.dismiss()
+                            }.setNegativeButton(R.string.bookmark_cancel_button) { self, _ ->
+                                self.dismiss()
+                            }.create()
 
                         dialogBookmark.show()
                     }
@@ -472,14 +458,10 @@ class MainActivity : AppCompatActivity() {
             when {
                 // Retrieve and display the status of a print job (if it exists)
                 it.isCompleted -> Snackbar.make(
-                    binding.root,
-                    "Successfull -> ${it.info.label}",
-                    3000
+                    binding.root, "Successfull -> ${it.info.label}", 3000
                 ).show()
                 it.isFailed -> Snackbar.make(
-                    binding.root,
-                    "Failed -> ${it.info.label}",
-                    3000
+                    binding.root, "Failed -> ${it.info.label}", 3000
                 ).show()
             }
         }
@@ -492,12 +474,11 @@ class MainActivity : AppCompatActivity() {
         val pm = getSystemService(Context.PRINT_SERVICE) as PrintManager
 
         // Define a unique job name based on the current URL and timestamp
-        val jobName =
-            "${URL(web.url).host}_${
-                SimpleDateFormat("HH:mm d_MMM_yy", Locale.ENGLISH).format(
-                    Calendar.getInstance().time
-                )
-            }"
+        val jobName = "${URL(web.url).host}_${
+            SimpleDateFormat("HH:mm d_MMM_yy", Locale.ENGLISH).format(
+                Calendar.getInstance().time
+            )
+        }"
 
         // Create a print document adapter from the webview
         val printAdapter = web.createPrintDocumentAdapter(jobName)
@@ -524,8 +505,7 @@ class MainActivity : AppCompatActivity() {
             WindowCompat.setDecorFitsSystemWindows(window, true)
             // Use the WindowInsetsControllerCompat to show system bars
             WindowInsetsControllerCompat(
-                window,
-                binding.root
+                window, binding.root
             ).show(WindowInsetsCompat.Type.systemBars())
         }
     }
@@ -576,6 +556,7 @@ fun changeTab(query: String, fragment: Fragment) {
     MainActivity.tabsList.add(Tab(name = query, fragment = fragment))
     pager.adapter?.notifyDataSetChanged()
     pager.currentItem = MainActivity.tabsList.size - 1
+    tabsButton.text = MainActivity.tabsList.size.toString()
 }
 
 // Checks if there is an internet connection available
