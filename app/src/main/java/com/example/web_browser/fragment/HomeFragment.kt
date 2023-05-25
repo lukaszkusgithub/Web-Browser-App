@@ -51,7 +51,7 @@ class HomeFragment : Fragment(), OnDayNightStateChanged {
         // Set web icon to search icon
         mainActivityRef.binding.webIcon.setImageResource(R.drawable.ic_search)
 
-        // TODO
+        // Set refresh button visibility to GONE
         mainActivityRef.binding.refreshButton.visibility = View.GONE
 
         // Set a listener for searchViewHome and check for internet connection,

@@ -39,6 +39,17 @@
     <string name="error_tab_remove">Cant remove this tab</string>
 
 
+    <!--    Long press menu-->
+    <string name="new_tab_long_press">Open in new tab</string>
+    <string name="in_background_long_press">Open in background</string>
+    <string name="show_image_long_press">Show image</string>
+    <string name="save_image_long_press">Save image</string>
+    <string name="share_long_press">Share</string>
+    <string name="close_long_press">Close</string>
+    <string name="link_error_long_press">Not valid link</string>
+    <string name="share_alert_long_press">Sharing url</string>
+    <string name="save_image_alert_long_press">Image saved</string>
+
 
 
 

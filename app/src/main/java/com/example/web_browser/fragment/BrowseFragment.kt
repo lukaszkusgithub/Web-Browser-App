@@ -3,13 +3,17 @@ package com.example.web_browser.fragment
 import com.example.web_browser.`interface`.OnDayNightStateChanged
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.provider.MediaStore
 import android.text.SpannableStringBuilder
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.CookieManager
 import android.webkit.URLUtil
 import android.webkit.WebChromeClient
@@ -17,13 +21,22 @@ import android.webkit.WebStorage
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
 import com.example.web_browser.activity.MainActivity
 import com.example.web_browser.R
+import com.example.web_browser.activity.changeTab
 import com.example.web_browser.databinding.FragmentBrowseBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.snackbar.Snackbar
 import java.io.ByteArrayOutputStream
+import android.util.Base64
+import android.util.Log
+import java.util.*
 
 
+@Suppress("DEPRECATION")
 class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateChanged {
     // Declare a late-initialized binding variable of type FragmentBrowseBinding
     lateinit var binding: FragmentBrowseBinding
@@ -44,15 +57,26 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
 
         // Load the URL into the webview based on the value of the query variable
         binding.webView.apply {
+//            when {
+//                // If the query is a valid URL, load the URL
+//                URLUtil.isValidUrl(query) -> loadUrl(query)
+//                // If the query contains ".com" (ignoring case), assume it is a URL and load it
+//                query.contains(".com", ignoreCase = true) -> loadUrl(query)
+//                // Otherwise, search Google for the query
+//                else -> loadUrl("https://www.google.com/search?q=$query")
+//            }
+            // Load the appropriate URL based on the value of the query variable
             when {
-                // If the query is a valid URL, load the URL
                 URLUtil.isValidUrl(query) -> loadUrl(query)
-                // If the query contains ".com" (ignoring case), assume it is a URL and load it
-                query.contains(".com", ignoreCase = true) -> loadUrl(query)
-                // Otherwise, search Google for the query
+                query.contains(".com", ignoreCase = true) -> {
+                    if (!query.startsWith("http://") && !query.startsWith("https://")) query =
+                        "http://" + query;
+                    loadUrl(query)
+                }
                 else -> loadUrl("https://www.google.com/search?q=$query")
             }
         }
+
         // Return the view
         return view
     }
@@ -76,9 +100,11 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
         // Get a reference to the MainActivity
         val mainActivityRef = requireActivity() as MainActivity
 
-        // TODO
+        // Set the visibility of the refresh button to visible
         mainActivityRef.binding.refreshButton.visibility = View.VISIBLE
+        // Set an OnClickListener for the refresh button
         mainActivityRef.binding.refreshButton.setOnClickListener {
+            // Reload the WebView when the refresh button is clicked
             binding.webView.reload()
         }
 
@@ -179,16 +205,6 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
                 }
             }
 
-            // Load the appropriate URL based on the value of the query variable
-            when {
-                URLUtil.isValidUrl(query) -> loadUrl(query)
-                query.contains(".com", ignoreCase = true) -> {
-                    if (!query.startsWith("http://") && !query.startsWith("https://")) query =
-                        "http://" + query;
-                    loadUrl(query)
-                }
-                else -> loadUrl("https://www.google.com/search?q=$query")
-            }
 
             // Set an OnTouchListener on the WebView element
             binding.webView.setOnTouchListener { _, motionEvent ->
@@ -228,5 +244,152 @@ class BrowseFragment(private var query: String) : Fragment(), OnDayNightStateCha
     // NIGHT & LIGHT mode when changing UI config
     override fun onDayNightApplied() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    }
+
+    // Context menu
+    override fun onCreateContextMenu(
+        menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        // Get the hit test result from the WebView
+        val result = binding.webView.hitTestResult
+        // Handle the context menu options based on the hit test result type
+        when (result.type) {
+            // When the hit test result is an image
+            WebView.HitTestResult.IMAGE_TYPE -> {
+                // Add context menu options for displaying, saving, sharing, and closing the image
+                menu.add(R.string.show_image_long_press)
+                menu.add(R.string.save_image_long_press)
+                menu.add(R.string.share_long_press)
+                menu.add(R.string.close_long_press)
+            }
+            // When the hit test result is a link (anchor)
+            WebView.HitTestResult.SRC_ANCHOR_TYPE, WebView.HitTestResult.ANCHOR_TYPE -> {
+                // Add context menu options for opening the link in a new tab, opening it in the background,
+                // sharing the link, and closing the context menu
+                menu.add(R.string.new_tab_long_press)
+                menu.add(R.string.in_background_long_press)
+                menu.add(R.string.share_long_press)
+                menu.add(R.string.close_long_press)
+            }
+            // When the hit test result is an editable text or unknown type
+            WebView.HitTestResult.EDIT_TEXT_TYPE, WebView.HitTestResult.UNKNOWN_TYPE -> {}
+            // For any other hit test result type
+            else -> {
+                // Add context menu options for opening the link in a new tab, opening it in the background,
+                // sharing the link, and closing the context menu
+                menu.add(R.string.new_tab_long_press)
+                menu.add(R.string.in_background_long_press)
+                menu.add(R.string.share_long_press)
+                menu.add(R.string.close_long_press)
+            }
+        }
+    }
+
+    // Context menu select items actions
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+
+        // Create a message handler
+        val message = Handler().obtainMessage()
+        // Request the focused node href from the WebView
+        binding.webView.requestFocusNodeHref(message)
+        // Retrieve the URL and image URL from the message data
+        val url = message.data.getString("url")
+        val imgUrl = message.data.getString("src")
+
+        // Handle the selected item based on its title
+        when (item.title) {
+            // When the item is "New Tab"
+            "${getResources().getString(R.string.new_tab_long_press)}" -> {
+                // Change the tab with the provided URL and create a new BrowseFragment
+                changeTab(url.toString(), BrowseFragment(url.toString()))
+            }
+            // When the item is "In Background"
+            "${getResources().getString(R.string.in_background_long_press)}" -> {
+                // Change the tab with the provided URL, create a new BrowseFragment, and set isBackground to true
+                changeTab(url.toString(), BrowseFragment(url.toString()), isBackground = true)
+            }
+            // When the item is "Show Image"
+            "${getResources().getString(R.string.show_image_long_press)}" -> {
+                if (imgUrl != null) {
+                    if (imgUrl.contains("base64")) {
+                        // If the image URL is in base64 format, decode it and display the image in an AlertDialog
+                        val pureBytes = imgUrl.substring(imgUrl.indexOf(",") + 1)
+                        val decodedBytes = Base64.decode(pureBytes, Base64.DEFAULT)
+                        val finalImg =
+                            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+
+                        val imgView = ShapeableImageView(requireContext())
+                        imgView.setImageBitmap(finalImg)
+
+                        val imgDialog =
+                            MaterialAlertDialogBuilder(requireContext()).setView(imgView).create()
+                        imgDialog.show()
+
+                        imgView.layoutParams.width =
+                            Resources.getSystem().displayMetrics.widthPixels
+                        imgView.layoutParams.height =
+                            (Resources.getSystem().displayMetrics.heightPixels * .75).toInt()
+                        imgView.requestLayout()
+
+                        imgDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                    }
+                    // If the image URL is not in base64 format, open it in a new tab by changing the current tab
+                    else changeTab(imgUrl, BrowseFragment(imgUrl))
+                }
+            }
+            // When the item is "Save Image"
+            "${getResources().getString(R.string.save_image_long_press)}" -> {
+                if (imgUrl != null) {
+                    if (imgUrl.contains("base64")) {
+                        // If the image URL is in base64 format, decode it and save the image to the device's MediaStore
+                        val pureBytes = imgUrl.substring(imgUrl.indexOf(",") + 1)
+                        val decodedBytes = Base64.decode(pureBytes, Base64.DEFAULT)
+                        val finalImg =
+                            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+
+                        MediaStore.Images.Media.insertImage(
+                            requireActivity().contentResolver, finalImg, "Image", null
+                        )
+                        Snackbar.make(binding.root, R.string.save_image_alert_long_press, 2000)
+                            .show()
+                    }
+                    // If the image URL is not in base64 format, open it in the default image viewer
+                    else startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(imgUrl)))
+                }
+            }
+            // When the item is "Share"
+            "${getResources().getString(R.string.share_long_press)}" -> {
+                val tempUrl = url ?: imgUrl
+                if (tempUrl != null) {
+                    if (tempUrl.contains("base64")) {
+                        // If the URL is in base64 format, decode it and share the image
+                        val pureBytes = tempUrl.substring(tempUrl.indexOf(",") + 1)
+                        val decodedBytes = Base64.decode(pureBytes, Base64.DEFAULT)
+                        val finalImg =
+                            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+
+                        val path = MediaStore.Images.Media.insertImage(
+                            requireActivity().contentResolver, finalImg, "Image", null
+                        )
+
+                        ShareCompat.IntentBuilder(requireContext())
+                            .setChooserTitle(R.string.share_alert_long_press).setType("image/*")
+                            .setStream(Uri.parse(path)).startChooser()
+                    } else {
+                        // If the URL is not in base64 format, share it as plain text
+                        ShareCompat.IntentBuilder(requireContext())
+                            .setChooserTitle(R.string.share_alert_long_press).setType("text/plain")
+                            .setText(tempUrl).startChooser()
+                    }
+                } else Snackbar.make(binding.root, R.string.link_error_long_press.toString(), 2000)
+                    .show()
+            }
+            // When the item is "Close"
+            "${getResources().getString(R.string.close_long_press)}" -> {}
+        }
+        // Call the superclass method to handle the selected item
+        return super.onContextItemSelected(item)
     }
 }

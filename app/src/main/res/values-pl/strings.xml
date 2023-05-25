@@ -39,6 +39,18 @@
     <string name="error_tab_remove">Nie mozna usunac karty</string>
 
 
+    <!--    Long press menu-->
+    <string name="new_tab_long_press">Otworz w nowej karcie</string>
+    <string name="in_background_long_press">Otworz w tle</string>
+    <string name="show_image_long_press">Pokaz zdjecie</string>
+    <string name="save_image_long_press">Zapisz zdjecie</string>
+    <string name="share_long_press">Udostepnij</string>
+    <string name="close_long_press">Zamknij</string>
+    <string name="link_error_long_press">Niepoprawny link</string>
+    <string name="share_alert_long_press">Udostepnianie linku</string>
+    <string name="save_image_alert_long_press">Zdjecie zapisane</string>
+
+
 
 
 

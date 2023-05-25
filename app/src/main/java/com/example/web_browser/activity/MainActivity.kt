@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity() {
 
     // Initializes the view and sets the onClickListener for the settingButton.
     private fun initializeView() {
-        // TODO
+        // Set an OnClickListener for the tabs button
         binding.tabsButton.setOnClickListener {
             // Inflate the layout for the more tools dialog
             val viewTabs = layoutInflater.inflate(R.layout.tabs_manager_view, binding.root, false)
@@ -183,19 +183,24 @@ class MainActivity : AppCompatActivity() {
                 MaterialAlertDialogBuilder(this, R.style.roundCornerDialog).setView(viewTabs)
                     .setTitle(R.string.tabs_title)
                     .setPositiveButton(R.string.tabs_home) { self, _ ->
+                        // Change the tab to the HomeFragment when the "Home" button is clicked
                         changeTab("Home", HomeFragment())
                         self.dismiss()
                     }.setNeutralButton(R.string.google_site) { self, _ ->
+                        // Change the tab to the BrowseFragment with the Google homepage URL when the "Google" button is clicked
                         changeTab("Google", BrowseFragment(query = "www.google.com"))
                         self.dismiss()
                     }.create()
 
+            // Configure the RecyclerView for displaying tabs
             bindingTabs.tabsRecyclerView.setHasFixedSize(true)
             bindingTabs.tabsRecyclerView.layoutManager = LinearLayoutManager(this)
             bindingTabs.tabsRecyclerView.adapter = TabAdapter(this, dialogTabs)
 
+            // Show the tabs manager dialog
             dialogTabs.show()
 
+            // Customize the buttons in the tabs manager dialog
             val positiveButton = dialogTabs.getButton(AlertDialog.BUTTON_POSITIVE)
             val neutralButton = dialogTabs.getButton(AlertDialog.BUTTON_NEUTRAL)
 
@@ -552,11 +557,15 @@ class MainActivity : AppCompatActivity() {
 }
 
 // Adds a new tab (Fragment) to the ViewPager
-fun changeTab(query: String, fragment: Fragment) {
+fun changeTab(query: String, fragment: Fragment, isBackground: Boolean = false) {
     MainActivity.tabsList.add(Tab(name = query, fragment = fragment))
     pager.adapter?.notifyDataSetChanged()
-    pager.currentItem = MainActivity.tabsList.size - 1
     tabsButton.text = MainActivity.tabsList.size.toString()
+
+    if (!isBackground) {
+        pager.currentItem = MainActivity.tabsList.size - 1
+    }
+
 }
 
 // Checks if there is an internet connection available

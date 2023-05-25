@@ -43,23 +43,32 @@ class TabAdapter(
         )
     }
 
-    // TODO
     override fun onBindViewHolder(holder: MyHolder, position: Int) {
+        // Set the name of the tab at the given position in the tabsList to the name TextView in the ViewHolder
         holder.name.text = MainActivity.tabsList[position].name
+        // Set an OnClickListener for the root view of the ViewHolder
         holder.root.setOnClickListener {
+            // Set the current item of the pager to the clicked position
             MainActivity.pager.currentItem = position
+            // Dismiss the dialog
             dialog.dismiss()
         }
-
+        // Set an OnClickListener for the cancel button in the ViewHolder
         holder.cancelButton.setOnClickListener {
-            if (MainActivity.tabsList.size == 1 || position == MainActivity.pager.currentItem) Snackbar.make(
-                MainActivity.pager,
-                R.string.error_tab_remove,
-                2000
-            ).show()
-            else {
+            // Check if there is only one tab left or if the clicked position is the current item in the pager
+            if (MainActivity.tabsList.size == 1 || position == MainActivity.pager.currentItem) {
+                // Show a Snackbar with an error message indicating that the tab cannot be removed
+                Snackbar.make(
+                    MainActivity.pager,
+                    R.string.error_tab_remove,
+                    2000
+                ).show()
+            } else {
+                // Remove the tab at the clicked position from the tabsList
                 MainActivity.tabsList.removeAt(position)
+                // Notify the adapter that the data set has changed
                 notifyDataSetChanged()
+                // Notify the pager's adapter that an item has been removed at the clicked position
                 MainActivity.pager.adapter?.notifyItemRemoved(position)
             }
         }
